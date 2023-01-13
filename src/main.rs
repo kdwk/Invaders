@@ -71,7 +71,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 
     //Cleanup
-    drop(render_tx); // This should theoretically be automatically done anyway
+    drop(render_tx); // This should theoretically automatically happen
     render_thread.join();
     audio.wait();
     stdout.execute(Show)?;
