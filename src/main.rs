@@ -1,7 +1,9 @@
 use std::error::Error;
+use std::time::Duration;
+use crossterm::event::{Event, KeyCode};
 use rusty_audio::Audio;
 use rusty_timer::Timer;
-use crossterm::terminal;
+use crossterm::{terminal, event};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use crossterm::cursor::{Show, Hide};
 use crossterm::ExecutableCommand;
@@ -23,6 +25,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     terminal::enable_raw_mode()?;
     stdout.execute(EnterAlternateScreen)?;
     stdout.execute(Hide)?;
+
+    // Game loop
+    'gameloop: loop {
+        // Handle input
+        while event::poll(Duration::default())? {
+            if let Event::Key(key_event) = event::read()? {
+                match key_event.code {
+                    KeyCode::Esc | KeyCode::Char('q') => {
+                        audio.play("lose");
+                        break 'gameloop;
+                    },
+                    _ => {}
+                }
+            }
+        }
+    }
 
 
     //Cleanup
