@@ -1,6 +1,7 @@
 use std::error::Error;
 use crossterm::event::{Event, KeyCode};
-use invaders::frame::{self, new_frame};
+use invaders::frame::{self, new_frame, Drawable};
+use invaders::player::Player;
 use invaders::render::render;
 use rusty_audio::Audio;
 use rusty_timer::Timer;
@@ -45,9 +46,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
 
+    let mut player = Player::init();
+
     // Game loop
     'gameloop: loop {
-        let current_frame = new_frame();
+        let mut current_frame = new_frame(); // Needs to be mutable because we need to draw player and stuff on it
         // Handle input
         while event::poll(Duration::default())? {
             if let Event::Key(key_event) = event::read()? {
@@ -56,12 +59,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                         audio.play("lose");
                         break 'gameloop;
                     },
+                    KeyCode::Left => player.move_left(),
+                    KeyCode::Right => player.move_right(),
                     _ => {}
                 }
             }
         }
 
         // Draw & render
+        player.draw(&mut current_frame);
         // It'll crash the first few times since receiver is not set up: discard result ↓
         let _ = render_tx.send(current_frame);
         // Game loop will be much faster than render loop, introduce artificial delay such that we don't try to render too many frames per second
