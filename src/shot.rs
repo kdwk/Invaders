@@ -1,11 +1,11 @@
 use rusty_timer::Timer;
-use crate::frame::Drawable;
+use crate::frame::{Drawable, Frame};
 
 pub struct Shot {
     pub x: usize,
     pub y: usize,
     pub exploding: bool,
-    tiner: Timer,
+    timer: Timer,
 }
 
 impl Shot {
