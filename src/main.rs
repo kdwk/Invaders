@@ -4,7 +4,6 @@ use invaders::frame::{self, new_frame, Drawable};
 use invaders::player::Player;
 use invaders::render::render;
 use rusty_audio::Audio;
-use rusty_time::Timer;
 use crossterm::{terminal, event};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use crossterm::cursor::{Show, Hide};
