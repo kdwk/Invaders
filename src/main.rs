@@ -1,15 +1,8 @@
-use std::error::Error;
-use crossterm::event::{Event, KeyCode};
-use invaders::frame::{self, new_frame, Drawable};
-use invaders::player::Player;
-use invaders::render::render;
+use invaders::{frame::{self, new_frame, Drawable}, player::Player, render::render};
 use rusty_audio::Audio;
-use crossterm::{terminal, event};
-use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
-use crossterm::cursor::{Show, Hide};
-use crossterm::ExecutableCommand;
+use crossterm::{event::{Event, KeyCode, self}, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}, cursor::{Show, Hide}, ExecutableCommand};
 use crossbeam::{channel};
-use std::{io, thread, time::Duration};
+use std::{error::Error, io, thread, time::Duration};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut audio = Audio::new();
