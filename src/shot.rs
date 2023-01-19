@@ -1,4 +1,4 @@
-use rusty_timer::Timer;
+use rusty_time::Timer;
 use crate::frame::{Drawable, Frame};
 
 pub struct Shot {

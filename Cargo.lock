@@ -348,7 +348,7 @@ dependencies = [
  "crossbeam",
  "crossterm",
  "rusty_audio",
- "rusty_timer",
+ "rusty_time",
 ]
 
 [[package]]
@@ -818,10 +818,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "rusty_timer"
-version = "1.0.3"
+name = "rusty_time"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a34341a8f385d11407a4bbacb9d7ef934f13e33dddc1c6990ee02ec7db6d10a"
+checksum = "a7ba0ed0c92b2a11aed70e9145e8414a2cd5f4ff191defbc46f2cedfb86ef2b2"
 
 [[package]]
 name = "same-file"
