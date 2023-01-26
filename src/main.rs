@@ -2,7 +2,7 @@ use invaders::{frame::{self, new_frame, Drawable}, player::Player, render::rende
 use rusty_audio::Audio;
 use crossterm::{event::{Event, KeyCode, self}, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}, cursor::{Show, Hide}, ExecutableCommand};
 use crossbeam::{channel};
-use std::{error::Error, io, thread, time::Duration};
+use std::{error::Error, io, thread, time::{Duration, Instant}};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut audio = Audio::new();
@@ -24,6 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Render loop in a separate thread
     let (render_tx, render_rx) = channel::unbounded();
     let render_thread = thread::spawn(move || {
+        // Optimization: compare last frame, this frame, only render new stuff
         let mut last_frame = frame::new_frame();
         let mut stdout= io::stdout();
         render(&mut stdout, &last_frame, &last_frame, true);
@@ -39,9 +40,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
 
     let mut player = Player::init();
+    let mut instant = Instant::now();
 
     // Game loop
     'gameloop: loop {
+        let delta = instant.elapsed();
+        instant = Instant::now();
         let mut current_frame = new_frame(); // Needs to be mutable because we need to draw player and stuff on it
         // Handle input
         while event::poll(Duration::default())? {
@@ -53,10 +57,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                     },
                     KeyCode::Left => player.move_left(),
                     KeyCode::Right => player.move_right(),
+                    KeyCode::Char(' ') | KeyCode::Enter => {
+                        let shot_is_successful = player.shoot();
+                        if shot_is_successful {
+                            audio.play("pew");
+                        }
+                    },
                     _ => {}
                 }
             }
         }
+
+        // Updates
+        player.update_shots(delta);
 
         // Draw & render
         player.draw(&mut current_frame);
