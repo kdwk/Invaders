@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use rusty_time::Timer;
 
 use crate::{NUM_COLS, NUM_ROWS};
@@ -26,7 +28,7 @@ impl Army {
         // for x in 0..
         Self { army: army, move_timer: Timer::from_millis(2000), direction: 1 }
     }
-    pub fn update(&mut self, delta: Timer::Duration) -> bool { // Boolean for 'whether the entire army moved
+    pub fn update(&mut self, delta: Duration) -> bool { // Boolean for 'whether the entire army moved
         self.move_timer.update(delta);
         if self.move_timer.ready {
             self.move_timer.reset();
@@ -37,13 +39,19 @@ impl Army {
                     downwards = true; // Move downwards one row
                     self.direction = 1; // Then move to the right
                 }
-            } else if self.direction == 1 {
+            } else if self.direction == 1 { // If army is currently moving to the right
                 let max_x = self.army.iter().map(|invader| invader.x).max().unwrap_or(NUM_COLS-1);
                 if max_x == NUM_COLS-1 {
-                    downwards = true;
-                    self.direction = -1;
-                    // TODO
+                    downwards = true; // Move downwards one row
+                    self.direction = -1; // Then move to the left
                 }
+            }
+            if downwards {
+                let new_duration = max(self.move_timer.duration.as_millis()-250, 250); // Make the army move faster, but not lower than 250ms
+                self.move_timer = Timer::from_millis(new_duration)
+            } else {
+
+
             }
             true
         }
