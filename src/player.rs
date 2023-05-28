@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{NUM_COLS, NUM_ROWS, frame::{Frame, Drawable}, shot::Shot};
+use crate::{NUM_COLS, NUM_ROWS, frame::{Frame, Drawable}, shot::Shot, invaders::Army};
 
 pub struct Player {
     x: usize,
@@ -34,9 +34,9 @@ impl Player {
             false
         }
     }
-    pub fn update_shots(&mut self, delta: Duration) {
+    pub fn update_shots(&mut self, delta: Duration, invaders: &mut Army) {
         for shot in self.shots.iter_mut() {
-            shot.update(delta);
+            shot.update(delta, invaders);
         }
         self.shots.retain(|shot| !shot.is_dead());
     }

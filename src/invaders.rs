@@ -46,7 +46,7 @@ impl Army {
                     self.direction = -1; // Then move to the left
                 }
             }
-            if downwards {
+            if downwards && !self.reached_bottom() {
                 let new_duration = max(self.move_timer.duration.as_millis()-250, 250) as u64; // Make the army move faster, but not lower than 250ms
                 self.move_timer = Timer::from_millis(new_duration);
                 for invader in self.army.iter_mut() {
@@ -68,6 +68,13 @@ impl Army {
 
     pub fn reached_bottom(&self) -> bool {
         self.army.iter().map(|invader| invader.y).max().unwrap_or(NUM_ROWS-1) >= NUM_ROWS-1
+    }
+
+    pub fn kill_invader_at(&mut self, x: usize, y: usize) -> bool {
+        let prev_size = self.army.len();
+        self.army.retain(|invader| !(invader.x==x && invader.y==y));
+        let new_size = self.army.len();
+        !(prev_size==new_size)
     }
 }
 

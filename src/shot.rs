@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use rusty_time::Timer;
-use crate::frame::{Drawable, Frame};
+use crate::{frame::{Drawable, Frame}, invaders::{Army}};
 
 pub struct Shot {
     pub x: usize,
@@ -19,11 +19,14 @@ impl Shot {
             timer: Timer::from_millis(50),
         }
     }
-    pub fn update(&mut self, delta: Duration){
+    pub fn update(&mut self, delta: Duration, invaders: &mut Army) {
         self.timer.update(delta);
         if self.timer.ready && !self.exploding {
             if self.y > 0 { // If the shot hasn't reached the top yet
                 self.y -= 1;
+            }
+            if invaders.kill_invader_at(self.x, self.y) {
+                self.explode();
             }
             self.timer.reset();
         }

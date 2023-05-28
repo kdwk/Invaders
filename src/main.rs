@@ -69,9 +69,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
 
         // Updates
-        player.update_shots(delta);
+        player.update_shots(delta, &mut army);
         if army.update(delta) {
             audio.play("move");
+        }
+
+        if army.are_all_dead() {
+            audio.play("win");
+            break 'gameloop;
+        } else if army.reached_bottom() {
+            audio.play("lose");
+            break 'gameloop;
         }
 
         // Draw & render
