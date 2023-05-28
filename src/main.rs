@@ -89,6 +89,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         for drawable in drawables {
             drawable.draw(&mut current_frame);
         }
+        
         // It'll crash the first few times since receiver is not set up: discard result ↓
         let _ = render_tx.send(current_frame);
         // Game loop will be much faster than render loop, introduce artificial delay such that we don't try to render too many frames per second
