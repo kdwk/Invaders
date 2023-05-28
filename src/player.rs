@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{NUM_COLS, NUM_ROWS, frame::{self, Frame, Drawable}, shot::Shot};
+use crate::{NUM_COLS, NUM_ROWS, frame::{Frame, Drawable}, shot::Shot};
 
 pub struct Player {
     x: usize,
@@ -28,7 +28,7 @@ impl Player {
     }
     pub fn shoot(&mut self) -> bool { // Returns bool because there's max no of shots
         if self.shots.len() < 2 {
-            self.shots.push(Shot::init(self.x, self.y-1));
+            self.shots.push(Shot::init(self.x, self.y-1)); // Location = same horizontal, one above
             true
         } else {
             false

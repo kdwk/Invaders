@@ -1,8 +1,8 @@
 use std::time::Duration;
-
+use std::cmp::max;
 use rusty_time::Timer;
 
-use crate::{NUM_COLS, NUM_ROWS};
+use crate::{NUM_COLS, frame::Drawable, NUM_ROWS};
 
 pub struct Invader {
     pub x: usize,
@@ -47,14 +47,35 @@ impl Army {
                 }
             }
             if downwards {
-                let new_duration = max(self.move_timer.duration.as_millis()-250, 250); // Make the army move faster, but not lower than 250ms
-                self.move_timer = Timer::from_millis(new_duration)
+                let new_duration = max(self.move_timer.duration.as_millis()-250, 250) as u64; // Make the army move faster, but not lower than 250ms
+                self.move_timer = Timer::from_millis(new_duration);
+                for invader in self.army.iter_mut() {
+                    invader.y += 1;
+                }
             } else {
-
-
+                for invader in self.army.iter_mut() {
+                    invader.x = ((invader.x as isize) + self.direction) as usize ;
+                }
             }
-            true
+            return true;
         }
         false
+    }
+
+    pub fn are_all_dead(&self) -> bool {
+        self.army.is_empty()
+    }
+
+    pub fn reached_bottom(&self) -> bool {
+        self.army.iter().map(|invader| invader.y).max().unwrap_or(NUM_ROWS-1) >= NUM_ROWS-1
+    }
+}
+
+impl Drawable for Army {
+    fn draw(&self, frame: &mut crate::frame::Frame) {
+        for invader in self.army.iter() {
+            frame[invader.x][invader.y] = if (self.move_timer.time_left.as_secs_f32()/self.move_timer.duration.as_secs_f32()) > 0.5
+                                                {"x"} else {"+"}
+        }
     }
 }

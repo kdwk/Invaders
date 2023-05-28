@@ -1,4 +1,4 @@
-use invaders::{frame::{self, new_frame, Drawable}, player::Player, render::render};
+use invaders::{frame::{self, new_frame, Drawable}, player::Player, render::render, invaders::{Army}};
 use rusty_audio::Audio;
 use crossterm::{event::{Event, KeyCode, self}, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}, cursor::{Show, Hide}, ExecutableCommand};
 use crossbeam::{channel};
@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut player = Player::init();
     let mut instant = Instant::now();
-
+    let mut army = Army::init();
     // Game loop
     'gameloop: loop {
         let delta = instant.elapsed();
@@ -70,9 +70,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // Updates
         player.update_shots(delta);
+        if army.update(delta) {
+            audio.play("move");
+        }
 
         // Draw & render
-        player.draw(&mut current_frame);
+        // player.draw(&mut current_frame);
+        // army.draw(&mut current_frame);
+        let drawables: Vec<&dyn Drawable> = vec![&player, &army];
+        for drawable in drawables {
+            drawable.draw(&mut current_frame);
+        }
         // It'll crash the first few times since receiver is not set up: discard result ↓
         let _ = render_tx.send(current_frame);
         // Game loop will be much faster than render loop, introduce artificial delay such that we don't try to render too many frames per second
@@ -83,7 +91,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     //Cleanup
     drop(render_tx); // This should theoretically automatically happen
-    render_thread.join();
+    render_thread.join().expect("Couldn't join render_thread");
     audio.wait();
     stdout.execute(Show)?;
     stdout.execute(LeaveAlternateScreen)?;
